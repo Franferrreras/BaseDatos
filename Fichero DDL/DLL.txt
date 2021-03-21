@@ -1,0 +1,165 @@
+-- hearthstone.cartasbeforeupdete definition
+
+CREATE TABLE `cartasbeforeupdete` (
+  `carta` varchar(40) DEFAULT NULL,
+  `habilidad` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.expansion definition
+
+CREATE TABLE `expansion` (
+  `Expansion` varchar(50) NOT NULL,
+  `fecha_lanzamiento` date NOT NULL,
+  PRIMARY KEY (`Expansion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.habilidad definition
+
+CREATE TABLE `habilidad` (
+  `id_habilidad` int NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY (`id_habilidad`)
+) ENGINE=InnoDB AUTO_INCREMENT=733 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.jugadores definition
+
+CREATE TABLE `jugadores` (
+  `idUsuario` int NOT NULL AUTO_INCREMENT,
+  `First Name` varchar(15) DEFAULT NULL,
+  `Last Name` varchar(20) DEFAULT NULL,
+  `Age` int DEFAULT NULL,
+  `Ranking` int DEFAULT NULL,
+  `Region` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`idUsuario`)
+) ENGINE=InnoDB AUTO_INCREMENT=1256 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.jugadoresborrados definition
+
+CREATE TABLE `jugadoresborrados` (
+  `id` int DEFAULT NULL,
+  `nombre` varchar(40) DEFAULT NULL,
+  `accion` varchar(20) DEFAULT 'BORRADO',
+  `fecha` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.logros definition
+
+CREATE TABLE `logros` (
+  `idlog` int NOT NULL AUTO_INCREMENT,
+  `logro` varchar(60) DEFAULT NULL,
+  `descripcion` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`idlog`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.clase definition
+
+CREATE TABLE `clase` (
+  `clase` varchar(50) NOT NULL,
+  `poderHeroe` int NOT NULL,
+  PRIMARY KEY (`clase`),
+  KEY `poderHeroe` (`poderHeroe`),
+  CONSTRAINT `clase_ibfk_1` FOREIGN KEY (`poderHeroe`) REFERENCES `habilidad` (`id_habilidad`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.heroe definition
+
+CREATE TABLE `heroe` (
+  `heroe` varchar(50) NOT NULL,
+  `clase` varchar(50) NOT NULL,
+  PRIMARY KEY (`heroe`),
+  KEY `clase` (`clase`),
+  CONSTRAINT `heroe_ibfk_1` FOREIGN KEY (`clase`) REFERENCES `clase` (`clase`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.logors_usuarios definition
+
+CREATE TABLE `logors_usuarios` (
+  `idlogro` int NOT NULL,
+  `idusuario` int NOT NULL,
+  PRIMARY KEY (`idlogro`,`idusuario`),
+  KEY `idusuario` (`idusuario`),
+  CONSTRAINT `logors_usuarios_ibfk_1` FOREIGN KEY (`idlogro`) REFERENCES `logros` (`idlog`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `logors_usuarios_ibfk_2` FOREIGN KEY (`idusuario`) REFERENCES `jugadores` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.mazo definition
+
+CREATE TABLE `mazo` (
+  `idMazo` int NOT NULL AUTO_INCREMENT,
+  `nombreM` varchar(40) NOT NULL,
+  `clase` varchar(50) DEFAULT NULL,
+  `winrate` double DEFAULT NULL,
+  PRIMARY KEY (`idMazo`),
+  KEY `clase` (`clase`),
+  CONSTRAINT `mazo_ibfk_1` FOREIGN KEY (`clase`) REFERENCES `clase` (`clase`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.mazojugadores definition
+
+CREATE TABLE `mazojugadores` (
+  `idMazo` int NOT NULL,
+  `idUsuario` int NOT NULL,
+  PRIMARY KEY (`idMazo`,`idUsuario`),
+  KEY `idMazo` (`idMazo`),
+  KEY `idUsuario` (`idUsuario`),
+  CONSTRAINT `mazojugadores_ibfk_1` FOREIGN KEY (`idMazo`) REFERENCES `mazo` (`idMazo`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `mazojugadores_ibfk_2` FOREIGN KEY (`idUsuario`) REFERENCES `jugadores` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.thebest definition
+
+CREATE TABLE `thebest` (
+  `jwin` int NOT NULL,
+  `fecha` date DEFAULT NULL,
+  KEY `jwin` (`jwin`),
+  CONSTRAINT `thebest_ibfk_2` FOREIGN KEY (`jwin`) REFERENCES `jugadores` (`idUsuario`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.cartas definition
+
+CREATE TABLE `cartas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  `costo_mana` int NOT NULL,
+  `ataque` int NOT NULL,
+  `salud` int NOT NULL,
+  `rareza` varchar(50) NOT NULL,
+  `raza` varchar(50) DEFAULT NULL,
+  `clase` varchar(50) NOT NULL,
+  `habilidad` int NOT NULL,
+  `triggers` varchar(50) DEFAULT NULL,
+  `expansion` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `clase` (`clase`),
+  KEY `habilidad` (`habilidad`),
+  KEY `expansion` (`expansion`),
+  CONSTRAINT `cartas_ibfk_1` FOREIGN KEY (`clase`) REFERENCES `clase` (`clase`) ON DELETE CASCADE,
+  CONSTRAINT `cartas_ibfk_2` FOREIGN KEY (`habilidad`) REFERENCES `habilidad` (`id_habilidad`),
+  CONSTRAINT `cartas_ibfk_3` FOREIGN KEY (`expansion`) REFERENCES `expansion` (`Expansion`) ON UPDATE CASCADE,
+  CONSTRAINT `cartas_chk_1` CHECK ((`rareza` in (_utf8mb4'poco común',_utf8mb4'común',_utf8mb4'épica',_utf8mb4'legendaria')))
+) ENGINE=InnoDB AUTO_INCREMENT=1748 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- hearthstone.lista_mazo definition
+
+CREATE TABLE `lista_mazo` (
+  `cartaid` int NOT NULL,
+  `mazoid` int NOT NULL,
+  `num_copias` int NOT NULL,
+  PRIMARY KEY (`cartaid`,`mazoid`),
+  KEY `mazoid` (`mazoid`),
+  CONSTRAINT `lista_mazo_ibfk_1` FOREIGN KEY (`cartaid`) REFERENCES `cartas` (`id`),
+  CONSTRAINT `lista_mazo_ibfk_2` FOREIGN KEY (`mazoid`) REFERENCES `mazo` (`idMazo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
